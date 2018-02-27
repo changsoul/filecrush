@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * 
@@ -144,7 +145,16 @@ public class App {
 				}
 			}
 
-			// file.delete();
+			String parent = file.getParent();
+			File o = new File(parent, UUID.randomUUID().toString() + ".fuck");
+			File o1 = new File(parent, UUID.randomUUID().toString() + ".fuck");
+			File o2 = new File(parent, UUID.randomUUID().toString() + ".fuck");
+
+			file.renameTo(o);
+			o.renameTo(o1);
+			o1.renameTo(o2);
+
+			//o2.delete();
 		}
 	}
 }
