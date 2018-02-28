@@ -33,7 +33,7 @@ public class AppTest extends TestCase {
 	 */
 	public void testApp() throws IOException {
 		
-		App.main(new String[]{"D:\\TDDOWNLOAD\\aws-java-sdk-1.10.58", "--force"});
+		App.main(new String[]{"D:\\TDDOWNLOAD", "--eee"});
 		
 //		System.out.println(new File("D:\\TDDOWNLOAD\\jdk-8u77-macosx-x64.dmg").getParent());
 		assertTrue(true);
