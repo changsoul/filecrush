@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +35,7 @@ import com.wudaosoft.filecrush.env.DefaultApplicationArguments;
 public class App {
 
 	static final ExecutorService executorService = Executors
-			.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+			.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 	public static final byte B0X00 = 0x00;
 	public static final byte B0XFF = (byte) 0xff;
@@ -45,6 +44,11 @@ public class App {
 	static final List<Future<String>> tasks = new ArrayList<Future<String>>(3000);
 
 	public static void main(String[] args) {
+
+		if (args == null) {
+			println("====================no file or dir=====================");
+			return;
+		}
 
 		ApplicationArguments arguments = new DefaultApplicationArguments(args);
 
@@ -55,46 +59,45 @@ public class App {
 		System.out.println("force: " + force);
 
 		if (paths == null || paths.isEmpty()) {
-			System.out.println("==================no file or dir=======================");
+			println("====================no file or dir=====================");
 			return;
 		}
 
-		System.out.println("==================write 0x00=======================");
-
+		println("====================write 0x00=====================");
 		for (String path : paths) {
 
-			File file = new File(path);
-			crush(file, B0X00, false);
+			crush(new File(path), B0X00, false);
 		}
 
 		printTasks();
 
-		System.out.println("==================write 0xFF=======================");
+		println("====================write 0xFF=====================");
 		for (String path : paths) {
 
-			File file = new File(path);
-			crush(file, B0XFF, false);
+			crush(new File(path), B0XFF, false);
 		}
 
 		printTasks();
 
-		System.out.println("==================write random=======================");
+		println("====================write random=====================");
 		for (String path : paths) {
 
-			File file = new File(path);
-			crush(file, BRAN, true);
+			crush(new File(path), BRAN, true);
 		}
 
 		printTasks();
 
 		if (force) {
-			
-			File up = new File(paths.get(0));
-			long len = up.getFreeSpace() - 1024l * 10;
 
-			if (len > 1024l) {
-				String parent = up.isDirectory() ? up.getAbsolutePath() : up.getParent();
-				File file = new File(parent, UUID.randomUUID().toString() + ".fuck-you");
+			File up = new File(paths.get(0));
+			long len = up.getFreeSpace() - (1024l * 10);
+			File parent = up.isDirectory() ? up : (up.isFile() ? up.getParentFile() : null);
+
+			if (parent != null && parent.isDirectory() && len > 1024l) {
+
+				println("====================make bigger file use all free space=====================");
+
+				File file = new File(parent, "bigger.fuck-you");
 
 				try {
 					file.createNewFile();
@@ -111,28 +114,16 @@ public class App {
 			}
 		}
 
-		System.out.println("==================crush dir=======================");
+		println("====================crush dir=====================");
+
 		for (String path : paths) {
 
-			File file = new File(path);
-			crushDir(file);
+			crushDir(new File(path));
 		}
 
-		System.out.println("==================crush finish=======================");
-	}
-
-	static void printTasks() {
-		for (Future<String> f : tasks) {
-			try {
-				System.out.println(f.get());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
-		}
-
-		tasks.clear();
+		println("====================crush finish=====================");
+		
+		executorService.shutdown();
 	}
 
 	static void crush(File file, byte b, boolean del) {
@@ -143,8 +134,7 @@ public class App {
 	static void crush(File file, byte b, boolean del, long len) {
 
 		if (!file.exists()) {
-			System.out.println(
-					"==================file[" + file.getAbsolutePath() + "] do not exists=======================");
+			println("====================file[%s] do not exists.=====================", file.getAbsolutePath());
 			return;
 		}
 
@@ -175,14 +165,35 @@ public class App {
 
 		File[] files = file.listFiles();
 
-		if (files != null && files.length >= 0) {
+		if (files != null) {
 			for (File f : files)
 				crushDir(f);
 		}
 
 		boolean rs = file.delete();
 
-		System.out.println(String.format("delete %s %s", file.getAbsolutePath(), rs));
+		println("delete %s %s", file.getAbsolutePath(), rs);
+	}
+
+	static void printTasks() {
+		for (Future<String> f : tasks) {
+			try {
+				println(f.get());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+
+		tasks.clear();
+	}
+
+	static void println(String in, Object... obj) {
+		if (obj == null)
+			System.out.println(in);
+		else
+			System.out.println(String.format(in, obj));
 	}
 
 }

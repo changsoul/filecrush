@@ -1,11 +1,18 @@
-/* 
- * Copyright(c)2010-2018 WUDAOSOFT.COM
+/**
+ *    Copyright 2009-2018 Wudao Software Studio(wudaosoft.com)
  * 
- * Email:changsoul.wu@gmail.com
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  * 
- * QQ:275100589
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
-
 package com.wudaosoft.filecrush;
 
 import java.io.BufferedOutputStream;
@@ -22,8 +29,10 @@ import java.util.concurrent.Callable;
 public class Runner implements Callable<String> {
 
 	static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	static final Random RAN = new Random();
+
 	static final int BUFF_SIZE = 2048;
+
+	private final Random ran = new Random();
 
 	private File file;
 	private byte b;
@@ -43,36 +52,31 @@ public class Runner implements Callable<String> {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
+	@Override
 	public String call() throws Exception {
 		BufferedOutputStream out = null;
 		boolean ong = (b == App.B0X00 || b == App.B0XFF);
 		try {
 			long l = len > 0l ? len : file.length();
 			out = new BufferedOutputStream(new FileOutputStream(file), BUFF_SIZE);
-			
+
 			int wrl = BUFF_SIZE;
 			byte[] buff = new byte[BUFF_SIZE];
 			genBuff(buff, b);
 
 			for (long i = 0; i < l; i += wrl) {
-				
-				if(wrl > l)
-					wrl = (int)l;
-				
+
 				long tl = l - i;
-				
-				if(wrl > tl)
-					wrl = (int)tl;
+
+				if (wrl > tl)
+					wrl = (int) tl;
 
 				if (!ong)
-					RAN.nextBytes(buff);
-				
+					ran.nextBytes(buff);
+
 				out.write(buff, 0, wrl);
 			}
-			
+
 			out.flush();
 
 		} catch (Exception e) {
@@ -83,15 +87,16 @@ public class Runner implements Callable<String> {
 			} catch (Exception e) {
 			}
 		}
-		
+
 		String rs = null;
 		String byteStr = null;
-		
-		if(ong)
-			byteStr = Integer.toHexString(b);
-		else 
+
+		if (ong) {
+			byteStr = Integer.toHexString(b & 0xff);
+			byteStr = byteStr.length() == 1 ? "0x0" + byteStr : "0x" + byteStr;
+		} else
 			byteStr = "random bytes";
-		
+
 		rs = String.format("write %s %s", byteStr, file.getAbsolutePath());
 
 		if (del) {
@@ -102,17 +107,17 @@ public class Runner implements Callable<String> {
 
 			rs += LINE_SEPARATOR + String.format("rename %s to %s", file.getAbsolutePath(), o.getAbsolutePath());
 			file.renameTo(o);
-			
+
 			rs += LINE_SEPARATOR + String.format("rename %s to %s", o.getAbsolutePath(), o1.getAbsolutePath());
 			o.renameTo(o1);
-			
+
 			rs += LINE_SEPARATOR + String.format("rename %s to %s", o1.getAbsolutePath(), o2.getAbsolutePath());
 			o1.renameTo(o2);
 
-			rs += LINE_SEPARATOR + String.format("delete %s", o2.getAbsolutePath());
-			o2.delete();
+			rs += LINE_SEPARATOR + String.format("delete %s %s", o2.getAbsolutePath(), o2.delete());
+
 		}
-		
+
 		return rs;
 	}
 
