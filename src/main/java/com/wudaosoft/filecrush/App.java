@@ -53,10 +53,11 @@ public class App {
 		ApplicationArguments arguments = new DefaultApplicationArguments(args);
 
 		List<String> paths = arguments.getNonOptionArgs();
-		boolean force = arguments.containsOption("force");
+		boolean force = arguments.containsOption("force"); // --force
 
 		System.out.println(paths);
-		System.out.println("force: " + force);
+		
+		println("force: %s", force);
 
 		if (paths == null || paths.isEmpty()) {
 			println("====================no file or dir=====================");

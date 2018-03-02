@@ -15,8 +15,7 @@
 		<exec.mainClass>com.wudaosoft.filecrush.App</exec.mainClass>
 
 		<!-- Dependency versions -->
-		<!-- <jxl.version>2.6.12</jxl.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<!-- <slf4j.version>1.7.25</slf4j.version>
 		<logback.version>1.2.3</logback.version> -->
 		<junit.version>4.12</junit.version>
 
@@ -41,7 +40,6 @@
 		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
 		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.1.0</maven-war-plugin.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -159,16 +157,6 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${maven-war-plugin.version}</version>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<version>${maven-gpg-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>flatten-maven-plugin</artifactId>
-					<version>${flatten-maven-plugin.version}</version>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -180,13 +168,6 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.plexus</groupId>
-						<artifactId>plexus-compiler-javac</artifactId>
-						<version>2.7</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
