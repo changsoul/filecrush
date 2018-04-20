@@ -97,7 +97,7 @@ public class Runner implements Callable<String> {
 		} else
 			byteStr = "random bytes";
 
-		rs = String.format("write %s %s", byteStr, file.getAbsolutePath());
+		rs = String.format("write %s %s", byteStr, file.getAbsolutePath().replace('%', '_'));
 
 		if (del) {
 			String parent = file.getParent();
@@ -105,16 +105,16 @@ public class Runner implements Callable<String> {
 			File o1 = new File(parent, UUID.randomUUID().toString() + ".fuck");
 			File o2 = new File(parent, UUID.randomUUID().toString() + ".fuck");
 
-			rs += LINE_SEPARATOR + String.format("rename %s to %s", file.getAbsolutePath(), o.getAbsolutePath());
+			rs += LINE_SEPARATOR + String.format("rename %s to %s", file.getAbsolutePath().replace('%', '_'), o.getAbsolutePath().replace('%', '_'));
 			file.renameTo(o);
 
-			rs += LINE_SEPARATOR + String.format("rename %s to %s", o.getAbsolutePath(), o1.getAbsolutePath());
+			rs += LINE_SEPARATOR + String.format("rename %s to %s", o.getAbsolutePath().replace('%', '_'), o1.getAbsolutePath().replace('%', '_'));
 			o.renameTo(o1);
 
-			rs += LINE_SEPARATOR + String.format("rename %s to %s", o1.getAbsolutePath(), o2.getAbsolutePath());
+			rs += LINE_SEPARATOR + String.format("rename %s to %s", o1.getAbsolutePath().replace('%', '_'), o2.getAbsolutePath().replace('%', '_'));
 			o1.renameTo(o2);
 
-			rs += LINE_SEPARATOR + String.format("delete %s %s", o2.getAbsolutePath(), o2.delete());
+			rs += LINE_SEPARATOR + String.format("delete %s %s", o2.getAbsolutePath().replace('%', '_'), o2.delete());
 
 		}
 

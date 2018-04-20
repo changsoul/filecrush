@@ -56,7 +56,7 @@ public class App {
 		boolean force = arguments.containsOption("force"); // --force
 
 		System.out.println(paths);
-		
+
 		println("force: %s", force);
 
 		if (paths == null || paths.isEmpty()) {
@@ -96,20 +96,25 @@ public class App {
 
 			if (parent != null && parent.isDirectory() && len > 1024l) {
 
-				println("====================make bigger file use all free space=====================");
-
 				File file = new File(parent, "bigger.fuck-you");
 
 				try {
 					file.createNewFile();
+
+					println("====================make bigger file use all free space. [%s]=====================", len);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
-				crush(file, B0X00, false, len);
-				printTasks();
-				crush(file, B0XFF, false, len);
-				printTasks();
+				if (!arguments.containsOption("last")) {
+					println("====================write 0x00=====================");
+					crush(file, B0X00, false, len);
+					printTasks();
+					println("====================write 0xFF=====================");
+					crush(file, B0XFF, false, len);
+					printTasks();
+				}
+				println("====================write random=====================");
 				crush(file, BRAN, true, len);
 				printTasks();
 			}
@@ -123,7 +128,7 @@ public class App {
 		}
 
 		println("====================crush finish=====================");
-		
+
 		executorService.shutdown();
 	}
 
@@ -173,7 +178,7 @@ public class App {
 
 		boolean rs = file.delete();
 
-		println("delete %s %s", file.getAbsolutePath(), rs);
+		println("delete %s %s", file.getAbsolutePath().replace('%', '_'), rs);
 	}
 
 	static void printTasks() {
